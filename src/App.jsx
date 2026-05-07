@@ -33,9 +33,17 @@ function TradingViewChart() {
 }
 
 function App() {
+  const [clock, setClock] = useState(new Date());
+
   const [accountSize, setAccountSize] = useState("50000");
   const [riskPercent, setRiskPercent] = useState("0.5");
   const [stopLoss, setStopLoss] = useState("35");
+
+  const [dailyGoal, setDailyGoal] = useState("250");
+  const [currentPnL, setCurrentPnL] = useState("0");
+  const [winRate, setWinRate] = useState("62");
+  const [fundedBalance, setFundedBalance] = useState("50000");
+  const [drawdownLimit, setDrawdownLimit] = useState("2500");
 
   const [symbol, setSymbol] = useState("XAU/USD");
   const [setup, setSetup] = useState("Liquidity sweep + VWAP reclaim");
@@ -47,8 +55,50 @@ function App() {
   });
 
   useEffect(() => {
+    const timer = setInterval(() => setClock(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("bwst_journal", JSON.stringify(journal));
   }, [journal]);
+
+  const session = useMemo(() => {
+    const hour = clock.getHours();
+
+    if (hour >= 20 || hour < 3) {
+      return {
+        name: "Asia Session",
+        note: "Build range. Watch patience. Do not force entries.",
+      };
+    }
+
+    if (hour >= 3 && hour < 8) {
+      return {
+        name: "London Session",
+        note: "Liquidity forms. Watch sweeps and directional intent.",
+      };
+    }
+
+    if (hour >= 8 && hour < 12) {
+      return {
+        name: "New York Open",
+        note: "Highest volatility. Respect risk. No revenge clicks.",
+      };
+    }
+
+    if (hour >= 12 && hour < 16) {
+      return {
+        name: "New York Midday",
+        note: "Often choppy. Protect profit. Do not overtrade.",
+      };
+    }
+
+    return {
+      name: "After Hours",
+      note: "Review, journal, study, and prepare tomorrow’s plan.",
+    };
+  }, [clock]);
 
   const risk = useMemo(() => {
     const account = Number(accountSize) || 0;
@@ -62,6 +112,19 @@ function App() {
       positionGuide: positionGuide.toFixed(2),
     };
   }, [accountSize, riskPercent, stopLoss]);
+
+  const fundedStats = useMemo(() => {
+    const balance = Number(fundedBalance) || 0;
+    const dd = Number(drawdownLimit) || 0;
+    const pnl = Number(currentPnL) || 0;
+    const goal = Number(dailyGoal) || 1;
+
+    return {
+      safetyFloor: (balance - dd).toFixed(2),
+      goalProgress: Math.min((pnl / goal) * 100, 100).toFixed(0),
+      remainingGoal: Math.max(goal - pnl, 0).toFixed(2),
+    };
+  }, [fundedBalance, drawdownLimit, currentPnL, dailyGoal]);
 
   const addJournalEntry = () => {
     const entry = {
@@ -124,9 +187,9 @@ function App() {
             "Markets",
             "Risk Room",
             "Trade Journal",
+            "Wealth",
             "Education",
             "AI Assistant",
-            "Wealth",
             "Community",
           ].map((item) => (
             <a key={item}>{item}</a>
@@ -136,6 +199,11 @@ function App() {
         <div className="sidebar-card">
           <p>Terminal Status</p>
           <strong>ONLINE</strong>
+        </div>
+
+        <div className="sidebar-card">
+          <p>Active Session</p>
+          <strong>{session.name}</strong>
         </div>
       </aside>
 
@@ -153,6 +221,16 @@ function App() {
           </div>
         </div>
 
+        <section className="top-command">
+          <div>
+            <p className="eyebrow">LIVE COMMAND DESK</p>
+            <h2>{clock.toLocaleTimeString()}</h2>
+            <p>{session.note}</p>
+          </div>
+
+          <div className="session-pill">{session.name}</div>
+        </section>
+
         <section className="hero">
           <div>
             <p className="eyebrow">ECONOMIC COMMAND CENTER</p>
@@ -168,6 +246,61 @@ function App() {
             <button className="gold">Enter Terminal</button>
             <button>Open Markets</button>
             <button>AI Trade Review</button>
+          </div>
+        </section>
+
+        <section className="metrics-grid">
+          <div className="metric-card">
+            <small>FUNDED BALANCE</small>
+            <input
+              value={fundedBalance}
+              onChange={(e) => setFundedBalance(e.target.value)}
+            />
+          </div>
+
+          <div className="metric-card">
+            <small>DAILY GOAL</small>
+            <input
+              value={dailyGoal}
+              onChange={(e) => setDailyGoal(e.target.value)}
+            />
+          </div>
+
+          <div className="metric-card">
+            <small>CURRENT P&L</small>
+            <input
+              value={currentPnL}
+              onChange={(e) => setCurrentPnL(e.target.value)}
+            />
+          </div>
+
+          <div className="metric-card">
+            <small>WIN RATE %</small>
+            <input value={winRate} onChange={(e) => setWinRate(e.target.value)} />
+          </div>
+
+          <div className="metric-card">
+            <small>SAFETY FLOOR</small>
+            <strong>${fundedStats.safetyFloor}</strong>
+          </div>
+
+          <div className="metric-card">
+            <small>GOAL LEFT</small>
+            <strong>${fundedStats.remainingGoal}</strong>
+          </div>
+        </section>
+
+        <section className="progress-panel">
+          <div className="panel-head">
+            <div>
+              <h2>Daily Goal Progress</h2>
+              <p>Stay consistent. Small clean wins beat reckless hero trades.</p>
+            </div>
+            <span>{fundedStats.goalProgress}% COMPLETE</span>
+          </div>
+
+          <div className="progress-bar">
+            <div style={{ width: `${fundedStats.goalProgress}%` }} />
           </div>
         </section>
 
