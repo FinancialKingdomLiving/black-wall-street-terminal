@@ -125,13 +125,8 @@ body {
 }
 
 @keyframes tickerMove {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .hero {
@@ -203,10 +198,19 @@ button.gold {
   margin-bottom: 25px;
 }
 
+.tools-grid {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 22px;
+  margin-bottom: 25px;
+}
+
 .chart-panel,
 .intel-panel,
 .market-card,
-.module-card {
+.module-card,
+.risk-panel,
+.journal-panel {
   background: rgba(17, 24, 39, 0.96);
   border: 1px solid #334155;
   border-radius: 26px;
@@ -218,7 +222,9 @@ button.gold {
 .chart-panel:hover,
 .intel-panel:hover,
 .market-card:hover,
-.module-card:hover {
+.module-card:hover,
+.risk-panel:hover,
+.journal-panel:hover {
   border-color: #facc15;
   transform: translateY(-4px);
 }
@@ -281,6 +287,124 @@ button.gold {
   line-height: 1.55;
 }
 
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid label,
+.notes-label {
+  display: grid;
+  gap: 8px;
+  color: #cbd5e1;
+  font-weight: 800;
+}
+
+input,
+textarea {
+  width: 100%;
+  background: #020617;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 15px;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.12);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.risk-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.risk-results div {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.risk-results small {
+  color: #93c5fd;
+  letter-spacing: 2px;
+}
+
+.risk-results strong {
+  display: block;
+  color: #facc15;
+  font-size: 30px;
+  margin-top: 8px;
+}
+
+.notes-label {
+  margin-top: 14px;
+}
+
+.journal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.journal-list {
+  margin-top: 18px;
+  display: grid;
+  gap: 14px;
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 5px;
+}
+
+.empty-journal {
+  color: #94a3b8;
+}
+
+.journal-entry {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.journal-entry div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.journal-entry strong {
+  color: #facc15;
+}
+
+.journal-entry span {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.journal-entry p {
+  color: #dbeafe;
+  line-height: 1.5;
+}
+
+.journal-entry b {
+  color: #93c5fd;
+}
+
 .market-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -324,6 +448,13 @@ button.gold {
   line-height: 1.55;
 }
 
+@media (max-width: 1100px) {
+  .terminal-grid,
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1000px) {
   .app {
     flex-direction: column;
@@ -333,10 +464,6 @@ button.gold {
     width: 100%;
     height: auto;
     position: relative;
-  }
-
-  .terminal-grid {
-    grid-template-columns: 1fr;
   }
 
   .hero {
@@ -349,5 +476,9 @@ button.gold {
 
   .chart-box {
     height: 420px;
+  }
+
+  .risk-results {
+    grid-template-columns: 1fr;
   }
 }

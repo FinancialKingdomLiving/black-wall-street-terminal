@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
 function TradingViewChart() {
@@ -33,6 +33,55 @@ function TradingViewChart() {
 }
 
 function App() {
+  const [accountSize, setAccountSize] = useState("50000");
+  const [riskPercent, setRiskPercent] = useState("0.5");
+  const [stopLoss, setStopLoss] = useState("35");
+
+  const [symbol, setSymbol] = useState("XAU/USD");
+  const [setup, setSetup] = useState("Liquidity sweep + VWAP reclaim");
+  const [emotion, setEmotion] = useState("Patient");
+  const [notes, setNotes] = useState("");
+  const [journal, setJournal] = useState(() => {
+    const saved = localStorage.getItem("bwst_journal");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("bwst_journal", JSON.stringify(journal));
+  }, [journal]);
+
+  const risk = useMemo(() => {
+    const account = Number(accountSize) || 0;
+    const percent = Number(riskPercent) || 0;
+    const stop = Number(stopLoss) || 1;
+    const dollars = account * (percent / 100);
+    const positionGuide = dollars / stop;
+
+    return {
+      dollars: dollars.toFixed(2),
+      positionGuide: positionGuide.toFixed(2),
+    };
+  }, [accountSize, riskPercent, stopLoss]);
+
+  const addJournalEntry = () => {
+    const entry = {
+      id: Date.now(),
+      date: new Date().toLocaleString(),
+      symbol,
+      setup,
+      emotion,
+      notes: notes || "No notes added.",
+      riskDollars: risk.dollars,
+    };
+
+    setJournal([entry, ...journal]);
+    setNotes("");
+  };
+
+  const clearJournal = () => {
+    setJournal([]);
+  };
+
   const tickerItems = [
     { symbol: "XAU/USD", label: "Gold", price: "Live Chart", change: "ACTIVE" },
     { symbol: "BTC/USD", label: "Bitcoin", price: "Crypto", change: "+ WATCH" },
@@ -54,38 +103,14 @@ function App() {
   ];
 
   const modules = [
-    {
-      title: "Trading Platform",
-      text: "Stocks, options, futures, forex, crypto, gold, watchlists, charts, execution planning, and risk control.",
-    },
-    {
-      title: "Education Hub",
-      text: "Courses, lessons, quizzes, trade psychology, market structure, insurance, business, and financial literacy.",
-    },
-    {
-      title: "Wealth Dashboard",
-      text: "Track income, debt, assets, net worth, insurance, investments, business growth, and legacy planning.",
-    },
-    {
-      title: "AI Finance Assistant",
-      text: "Analyze trades, calculate risk, summarize markets, explain options, and coach stronger decisions.",
-    },
-    {
-      title: "Crypto / Futures / Options",
-      text: "Command center for BTC, ETH, MNQ, NQ, ES, GC, SPY, QQQ, options flow, and momentum.",
-    },
-    {
-      title: "Business Intelligence",
-      text: "Sales tracking, expenses, customer insights, product performance, forecasting, and business analytics.",
-    },
-    {
-      title: "Community Network",
-      text: "Trading rooms, accountability groups, leaderboards, mentorship, study circles, and wealth-building community.",
-    },
-    {
-      title: "Economic Learning Ecosystem",
-      text: "Ownership, credit, taxes, insurance, investing, Black Wall Street history, and community economics.",
-    },
+    "Trading Platform",
+    "Education Hub",
+    "Wealth Dashboard",
+    "AI Finance Assistant",
+    "Crypto / Futures / Options",
+    "Business Intelligence",
+    "Community Network",
+    "Economic Learning Ecosystem",
   ];
 
   return (
@@ -97,11 +122,12 @@ function App() {
           {[
             "Dashboard",
             "Markets",
+            "Risk Room",
+            "Trade Journal",
             "Education",
             "AI Assistant",
             "Wealth",
             "Community",
-            "Settings",
           ].map((item) => (
             <a key={item}>{item}</a>
           ))}
@@ -130,9 +156,7 @@ function App() {
         <section className="hero">
           <div>
             <p className="eyebrow">ECONOMIC COMMAND CENTER</p>
-
             <h1>The Black Wall Street Terminal</h1>
-
             <p className="hero-text">
               A financial operating system for trading, wealth building, AI
               finance, business intelligence, crypto, futures, options,
@@ -154,7 +178,6 @@ function App() {
                 <h2>XAU/USD Live Chart</h2>
                 <p>TradingView chart engine connected</p>
               </div>
-
               <span>MARKET ACTIVE</span>
             </div>
 
@@ -170,7 +193,7 @@ function App() {
               <strong>Market Bias</strong>
               <p>
                 Wait for liquidity sweep, reclaim, confirmation, and risk
-                clarity. No chasing candles like they owe you child support.
+                clarity. No chasing candles like they owe you money.
               </p>
             </div>
 
@@ -183,19 +206,141 @@ function App() {
             </div>
 
             <div className="intel-card">
-              <strong>Next System Build</strong>
-              <p>
-                Supabase login, trade journal, saved watchlists, portfolios,
-                and AI assistant memory.
-              </p>
-            </div>
-
-            <div className="intel-card">
               <strong>Session Focus</strong>
               <p>
                 Watch London handoff, NY open liquidity, VWAP reclaim, and
                 volume confirmation.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="tools-grid">
+          <div className="risk-panel">
+            <div className="panel-head">
+              <div>
+                <h2>Risk Calculator</h2>
+                <p>Know the damage before you enter the trade.</p>
+              </div>
+            </div>
+
+            <div className="form-grid">
+              <label>
+                Account Size
+                <input
+                  value={accountSize}
+                  onChange={(e) => setAccountSize(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Risk %
+                <input
+                  value={riskPercent}
+                  onChange={(e) => setRiskPercent(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Stop Loss Distance
+                <input
+                  value={stopLoss}
+                  onChange={(e) => setStopLoss(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="risk-results">
+              <div>
+                <small>MAX RISK</small>
+                <strong>${risk.dollars}</strong>
+              </div>
+
+              <div>
+                <small>POSITION GUIDE</small>
+                <strong>{risk.positionGuide}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="journal-panel">
+            <div className="panel-head">
+              <div>
+                <h2>Trade Journal</h2>
+                <p>Save the lesson before the market humbles you again.</p>
+              </div>
+            </div>
+
+            <div className="form-grid">
+              <label>
+                Symbol
+                <input
+                  value={symbol}
+                  onChange={(e) => setSymbol(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Setup
+                <input
+                  value={setup}
+                  onChange={(e) => setSetup(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Emotion
+                <input
+                  value={emotion}
+                  onChange={(e) => setEmotion(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <label className="notes-label">
+              Trade Notes
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Entry reason, mistake, confirmation, lesson..."
+              />
+            </label>
+
+            <div className="journal-actions">
+              <button className="gold" onClick={addJournalEntry}>
+                Save Journal Entry
+              </button>
+
+              <button onClick={clearJournal}>Clear Journal</button>
+            </div>
+
+            <div className="journal-list">
+              {journal.length === 0 ? (
+                <p className="empty-journal">No journal entries yet.</p>
+              ) : (
+                journal.map((entry) => (
+                  <div className="journal-entry" key={entry.id}>
+                    <div>
+                      <strong>{entry.symbol}</strong>
+                      <span>{entry.date}</span>
+                    </div>
+
+                    <p>
+                      <b>Setup:</b> {entry.setup}
+                    </p>
+
+                    <p>
+                      <b>Emotion:</b> {entry.emotion}
+                    </p>
+
+                    <p>
+                      <b>Risk:</b> ${entry.riskDollars}
+                    </p>
+
+                    <p>{entry.notes}</p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -213,9 +358,9 @@ function App() {
 
         <section className="module-grid">
           {modules.map((module) => (
-            <div className="module-card" key={module.title}>
-              <h3>{module.title}</h3>
-              <p>{module.text}</p>
+            <div className="module-card" key={module}>
+              <h3>{module}</h3>
+              <p>Built into the Black Wall Street Terminal ecosystem.</p>
             </div>
           ))}
         </section>
