@@ -1,4 +1,6 @@
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -11,15 +13,15 @@ body {
   display: flex;
   color: white;
   background:
-    radial-gradient(circle at top left, rgba(250, 204, 21, 0.13), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 25%),
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.14), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 28%),
     #020617;
 }
 
 .sidebar {
   width: 250px;
   padding: 28px 22px;
-  background: rgba(2, 6, 23, 0.95);
+  background: rgba(2, 6, 23, 0.96);
   border-right: 1px solid #1e293b;
   height: 100vh;
   position: sticky;
@@ -33,7 +35,7 @@ body {
   margin-bottom: 35px;
 }
 
-.sidebar a {
+.nav-menu a {
   display: block;
   color: #cbd5e1;
   padding: 14px;
@@ -41,28 +43,107 @@ body {
   margin-bottom: 8px;
   text-decoration: none;
   cursor: pointer;
+  transition: 0.25s;
 }
 
-.sidebar a:hover {
+.nav-menu a:hover {
   background: #111827;
   color: #facc15;
+  transform: translateX(6px);
+}
+
+.sidebar-card {
+  margin-top: 30px;
+  border: 1px solid #334155;
+  background: #111827;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.sidebar-card p {
+  color: #94a3b8;
+  margin: 0 0 8px;
+}
+
+.sidebar-card strong {
+  color: #22c55e;
 }
 
 .main {
   flex: 1;
   padding: 30px;
-  max-width: 1500px;
+  max-width: 1550px;
+}
+
+.ticker-bar {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #334155;
+  background: rgba(2, 6, 23, 0.9);
+  border-radius: 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 0 40px rgba(250, 204, 21, 0.08);
+}
+
+.ticker-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: tickerMove 35s linear infinite;
+  padding: 14px;
+}
+
+.ticker-item {
+  min-width: 230px;
+  border: 1px solid #1e293b;
+  background: #111827;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: grid;
+  gap: 4px;
+}
+
+.ticker-item strong {
+  color: #facc15;
+  font-size: 17px;
+}
+
+.ticker-item span {
+  color: #93c5fd;
+  font-size: 12px;
+}
+
+.ticker-item em {
+  color: #cbd5e1;
+  font-style: normal;
+  font-size: 13px;
+}
+
+.ticker-item b {
+  color: #22c55e;
+  font-size: 12px;
+}
+
+@keyframes tickerMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .hero {
   border: 1px solid #334155;
   border-radius: 30px;
-  background: linear-gradient(135deg, rgba(17,24,39,.96), rgba(2,6,23,.96));
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.96), rgba(2, 6, 23, 0.96));
   padding: 38px;
   display: flex;
   justify-content: space-between;
   gap: 25px;
   margin-bottom: 25px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
 }
 
 .eyebrow {
@@ -75,11 +156,11 @@ body {
 .hero h1 {
   color: #facc15;
   font-size: clamp(40px, 6vw, 76px);
-  line-height: .95;
+  line-height: 0.95;
   margin: 10px 0 18px;
 }
 
-.hero p {
+.hero-text {
   color: #dbeafe;
   font-size: 19px;
   line-height: 1.6;
@@ -101,6 +182,12 @@ button {
   color: white;
   font-weight: 900;
   cursor: pointer;
+  transition: 0.25s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  border-color: #facc15;
 }
 
 button.gold {
@@ -124,7 +211,16 @@ button.gold {
   border: 1px solid #334155;
   border-radius: 26px;
   padding: 24px;
-  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  transition: 0.25s;
+}
+
+.chart-panel:hover,
+.intel-panel:hover,
+.market-card:hover,
+.module-card:hover {
+  border-color: #facc15;
+  transform: translateY(-4px);
 }
 
 .panel-head {
@@ -148,8 +244,8 @@ button.gold {
 
 .panel-head span {
   color: #22c55e;
-  background: rgba(34,197,94,.1);
-  border: 1px solid rgba(34,197,94,.3);
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
   padding: 10px 14px;
   border-radius: 999px;
   font-size: 12px;
@@ -228,27 +324,30 @@ button.gold {
   line-height: 1.55;
 }
 
-.market-card:hover,
-.module-card:hover,
-.chart-panel:hover,
-.intel-panel:hover {
-  border-color: #facc15;
-}
-
 @media (max-width: 1000px) {
-  .app { flex-direction: column; }
+  .app {
+    flex-direction: column;
+  }
+
   .sidebar {
     width: 100%;
     height: auto;
     position: relative;
   }
+
   .terminal-grid {
     grid-template-columns: 1fr;
   }
+
   .hero {
     flex-direction: column;
   }
+
   .main {
     padding: 18px;
+  }
+
+  .chart-box {
+    height: 420px;
   }
 }
