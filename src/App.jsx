@@ -50,7 +50,7 @@ function App() {
   const [journal, setJournal] = useState([]);
 
   const [watchSymbol, setWatchSymbol] = useState("XAU/USD");
-  const [watchType, setWatchType] = useState("Forex / Gold");
+  const [watchType, setWatchType] = useState("Gold / Forex");
   const [watchNotes, setWatchNotes] = useState("Watch London into NY liquidity.");
   const [watchlist, setWatchlist] = useState([]);
 
@@ -122,7 +122,7 @@ function App() {
     });
 
     if (error) alert(error.message);
-    else alert("Account created. Check your email if Supabase asks for confirmation.");
+    else alert("Account created. Check email if confirmation is required.");
   };
 
   const signIn = async () => {
@@ -143,12 +143,13 @@ function App() {
   };
 
   const loadJournal = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("trade_journal")
       .select("*")
       .order("created_at", { ascending: false });
 
-    setJournal(data || []);
+    if (error) alert(error.message);
+    else setJournal(data || []);
   };
 
   const saveTrade = async () => {
@@ -170,19 +171,20 @@ function App() {
 
     if (error) alert(error.message);
     else {
-      alert("Trade saved to Supabase.");
+      alert("Trade saved.");
       setNotes("");
       loadJournal();
     }
   };
 
   const loadWatchlist = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("watchlists")
       .select("*")
       .order("created_at", { ascending: false });
 
-    setWatchlist(data || []);
+    if (error) alert(error.message);
+    else setWatchlist(data || []);
   };
 
   const saveWatchlist = async () => {
@@ -209,12 +211,13 @@ function App() {
   };
 
   const loadPortfolio = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("portfolios")
       .select("*")
       .order("created_at", { ascending: false });
 
-    setPortfolio(data || []);
+    if (error) alert(error.message);
+    else setPortfolio(data || []);
   };
 
   const saveAsset = async () => {
@@ -250,11 +253,18 @@ function App() {
         <div className="logo">B.W.S.T</div>
 
         <nav className="nav-menu">
-          {["Dashboard", "Markets", "Risk Room", "Trade Journal", "Watchlist", "Portfolio", "AI Assistant", "Community"].map(
-            (item) => (
-              <a key={item}>{item}</a>
-            )
-          )}
+          {[
+            "Dashboard",
+            "Markets",
+            "Risk Room",
+            "Trade Journal",
+            "Watchlist",
+            "Portfolio",
+            "AI Assistant",
+            "Community",
+          ].map((item) => (
+            <a key={item}>{item}</a>
+          ))}
         </nav>
 
         <div className="sidebar-card">
@@ -307,14 +317,17 @@ function App() {
             <small>CLOUD JOURNAL</small>
             <strong>{journal.length}</strong>
           </div>
+
           <div className="metric-card">
             <small>WATCHLIST</small>
             <strong>{watchlist.length}</strong>
           </div>
+
           <div className="metric-card">
             <small>PORTFOLIO ASSETS</small>
             <strong>{portfolio.length}</strong>
           </div>
+
           <div className="metric-card">
             <small>PORTFOLIO VALUE</small>
             <strong>${portfolioValue}</strong>
@@ -331,8 +344,19 @@ function App() {
             </div>
 
             <div className="form-grid">
-              <label>Email<input value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} /></label>
-              <label>Password<input type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} /></label>
+              <label>
+                Email
+                <input value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} />
+              </label>
+
+              <label>
+                Password
+                <input
+                  type="password"
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                />
+              </label>
             </div>
 
             <div className="journal-actions">
@@ -351,14 +375,32 @@ function App() {
             </div>
 
             <div className="form-grid">
-              <label>Account Size<input value={accountSize} onChange={(e) => setAccountSize(e.target.value)} /></label>
-              <label>Risk %<input value={riskPercent} onChange={(e) => setRiskPercent(e.target.value)} /></label>
-              <label>Stop Loss Distance<input value={stopLoss} onChange={(e) => setStopLoss(e.target.value)} /></label>
+              <label>
+                Account Size
+                <input value={accountSize} onChange={(e) => setAccountSize(e.target.value)} />
+              </label>
+
+              <label>
+                Risk %
+                <input value={riskPercent} onChange={(e) => setRiskPercent(e.target.value)} />
+              </label>
+
+              <label>
+                Stop Loss Distance
+                <input value={stopLoss} onChange={(e) => setStopLoss(e.target.value)} />
+              </label>
             </div>
 
             <div className="risk-results">
-              <div><small>MAX RISK</small><strong>${risk.dollars}</strong></div>
-              <div><small>POSITION GUIDE</small><strong>{risk.positionGuide}</strong></div>
+              <div>
+                <small>MAX RISK</small>
+                <strong>${risk.dollars}</strong>
+              </div>
+
+              <div>
+                <small>POSITION GUIDE</small>
+                <strong>{risk.positionGuide}</strong>
+              </div>
             </div>
           </div>
         </section>
@@ -372,14 +414,25 @@ function App() {
               </div>
               <span>MARKET ACTIVE</span>
             </div>
-            <div className="chart-box"><TradingViewChart /></div>
+            <div className="chart-box">
+              <TradingViewChart />
+            </div>
           </div>
 
           <div className="intel-panel">
             <h2>AI Market Desk</h2>
-            <div className="intel-card"><strong>Market Bias</strong><p>Wait for liquidity sweep, reclaim, confirmation, and risk clarity.</p></div>
-            <div className="intel-card"><strong>Risk Rule</strong><p>Define stop loss before entry. The account must survive the ego.</p></div>
-            <div className="intel-card"><strong>Next Build</strong><p>AI coach, trade grading, portfolio analytics, and community rooms.</p></div>
+            <div className="intel-card">
+              <strong>Market Bias</strong>
+              <p>Wait for liquidity sweep, reclaim, confirmation, and risk clarity.</p>
+            </div>
+            <div className="intel-card">
+              <strong>Risk Rule</strong>
+              <p>Define stop loss before entry. The account must survive the ego.</p>
+            </div>
+            <div className="intel-card">
+              <strong>Next Build</strong>
+              <p>AI coach, trade grading, portfolio analytics, and community rooms.</p>
+            </div>
           </div>
         </section>
 
@@ -393,8 +446,15 @@ function App() {
             </div>
 
             <div className="form-grid">
-              <label>Symbol<input value={watchSymbol} onChange={(e) => setWatchSymbol(e.target.value)} /></label>
-              <label>Market Type<input value={watchType} onChange={(e) => setWatchType(e.target.value)} /></label>
+              <label>
+                Symbol
+                <input value={watchSymbol} onChange={(e) => setWatchSymbol(e.target.value)} />
+              </label>
+
+              <label>
+                Market Type
+                <input value={watchType} onChange={(e) => setWatchType(e.target.value)} />
+              </label>
             </div>
 
             <label className="notes-label">
@@ -404,17 +464,23 @@ function App() {
 
             <div className="journal-actions">
               <button className="gold" onClick={saveWatchlist}>Save Watchlist Item</button>
-              <button onClick={loadWatchlist}>Reload</button>
+              <button onClick={loadWatchlist}>Reload Watchlist</button>
             </div>
 
             <div className="journal-list">
-              {watchlist.length === 0 ? <p className="empty-journal">No watchlist items yet.</p> :
+              {watchlist.length === 0 ? (
+                <p className="empty-journal">No watchlist items yet.</p>
+              ) : (
                 watchlist.map((item) => (
                   <div className="journal-entry" key={item.id}>
-                    <div><strong>{item.symbol}</strong><span>{item.market_type}</span></div>
+                    <div>
+                      <strong>{item.symbol}</strong>
+                      <span>{item.market_type}</span>
+                    </div>
                     <p>{item.notes}</p>
                   </div>
-                ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -427,10 +493,25 @@ function App() {
             </div>
 
             <div className="form-grid">
-              <label>Asset<input value={asset} onChange={(e) => setAsset(e.target.value)} /></label>
-              <label>Asset Type<input value={assetType} onChange={(e) => setAssetType(e.target.value)} /></label>
-              <label>Quantity<input value={quantity} onChange={(e) => setQuantity(e.target.value)} /></label>
-              <label>Average Price<input value={avgPrice} onChange={(e) => setAvgPrice(e.target.value)} /></label>
+              <label>
+                Asset
+                <input value={asset} onChange={(e) => setAsset(e.target.value)} />
+              </label>
+
+              <label>
+                Asset Type
+                <input value={assetType} onChange={(e) => setAssetType(e.target.value)} />
+              </label>
+
+              <label>
+                Quantity
+                <input value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+              </label>
+
+              <label>
+                Average Price
+                <input value={avgPrice} onChange={(e) => setAvgPrice(e.target.value)} />
+              </label>
             </div>
 
             <label className="notes-label">
@@ -440,20 +521,26 @@ function App() {
 
             <div className="journal-actions">
               <button className="gold" onClick={saveAsset}>Save Asset</button>
-              <button onClick={loadPortfolio}>Reload</button>
+              <button onClick={loadPortfolio}>Reload Portfolio</button>
             </div>
 
             <div className="journal-list">
-              {portfolio.length === 0 ? <p className="empty-journal">No portfolio assets yet.</p> :
+              {portfolio.length === 0 ? (
+                <p className="empty-journal">No portfolio assets yet.</p>
+              ) : (
                 portfolio.map((item) => (
                   <div className="journal-entry" key={item.id}>
-                    <div><strong>{item.asset}</strong><span>{item.asset_type}</span></div>
+                    <div>
+                      <strong>{item.asset}</strong>
+                      <span>{item.asset_type}</span>
+                    </div>
                     <p><b>Quantity:</b> {item.quantity}</p>
                     <p><b>Avg Price:</b> ${item.avg_price}</p>
                     <p><b>Value:</b> ${(Number(item.quantity) * Number(item.avg_price)).toFixed(2)}</p>
                     <p>{item.notes}</p>
                   </div>
-                ))}
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -467,9 +554,20 @@ function App() {
           </div>
 
           <div className="form-grid">
-            <label>Symbol<input value={symbol} onChange={(e) => setSymbol(e.target.value)} /></label>
-            <label>Setup<input value={setup} onChange={(e) => setSetup(e.target.value)} /></label>
-            <label>Emotion<input value={emotion} onChange={(e) => setEmotion(e.target.value)} /></label>
+            <label>
+              Symbol
+              <input value={symbol} onChange={(e) => setSymbol(e.target.value)} />
+            </label>
+
+            <label>
+              Setup
+              <input value={setup} onChange={(e) => setSetup(e.target.value)} />
+            </label>
+
+            <label>
+              Emotion
+              <input value={emotion} onChange={(e) => setEmotion(e.target.value)} />
+            </label>
           </div>
 
           <label className="notes-label">
