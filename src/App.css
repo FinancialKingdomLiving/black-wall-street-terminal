@@ -3,24 +3,33 @@
 }
 
 :root {
-  --black: #02030a;
-  --deep: #060913;
-  --panel: rgba(12, 17, 31, 0.88);
-  --panel2: rgba(18, 24, 41, 0.92);
+  --void: #02030a;
+  --obsidian: #050711;
+  --midnight: #080d19;
+  --panel: rgba(10, 16, 30, 0.86);
+  --panel-strong: rgba(15, 23, 42, 0.94);
   --gold: #d4af37;
-  --gold2: #f5d76e;
+  --gold-hot: #ffd86b;
   --green: #00ff88;
-  --blue: #7dd3fc;
+  --cyan: #67e8f9;
+  --purple: #7c3aed;
+  --red: #ff4d4d;
+  --text: #f8fafc;
   --muted: #9ca3af;
-  --line: rgba(212, 175, 55, 0.22);
-  --white: #f8fafc;
+  --line: rgba(255, 216, 107, 0.22);
+  --glass: blur(18px);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: var(--black);
-  color: var(--white);
+  background: var(--void);
+  color: var(--text);
   font-family: Inter, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
 body::before {
@@ -28,47 +37,78 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 5%, rgba(212, 175, 55, 0.22), transparent 28%),
-    radial-gradient(circle at 80% 12%, rgba(0, 255, 136, 0.09), transparent 24%),
-    linear-gradient(135deg, #02030a 0%, #07111f 48%, #02030a 100%);
-  z-index: -2;
+    radial-gradient(circle at 12% 8%, rgba(255, 216, 107, 0.18), transparent 28%),
+    radial-gradient(circle at 86% 4%, rgba(103, 232, 249, 0.12), transparent 24%),
+    radial-gradient(circle at 78% 78%, rgba(124, 58, 237, 0.14), transparent 30%),
+    linear-gradient(135deg, #010208 0%, #07101f 46%, #02030a 100%);
+  z-index: -4;
 }
 
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: linear-gradient(to bottom, black, transparent 90%);
-  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(135deg, transparent 48%, rgba(255,216,107,0.045) 49%, transparent 51%);
+  background-size: 52px 52px, 52px 52px, 190px 190px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 92%);
+  z-index: -3;
 }
 
 .app {
   min-height: 100vh;
   display: flex;
+  position: relative;
+}
+
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      60deg,
+      transparent 0 18px,
+      rgba(255, 216, 107, 0.025) 18px 20px
+    );
+  opacity: 0.55;
+  z-index: -2;
 }
 
 .sidebar {
-  width: 285px;
+  width: 305px;
   min-height: 100vh;
   position: sticky;
   top: 0;
-  padding: 28px 22px;
-  background: rgba(2, 3, 10, 0.86);
+  padding: 30px 22px;
+  background:
+    linear-gradient(180deg, rgba(2,3,10,0.98), rgba(5,7,17,0.9)),
+    radial-gradient(circle at top, rgba(255,216,107,0.12), transparent 35%);
   border-right: 1px solid var(--line);
-  backdrop-filter: blur(18px);
+  backdrop-filter: var(--glass);
 }
 
 .logo {
-  font-size: 24px;
-  color: var(--gold2);
-  font-weight: 950;
-  letter-spacing: 6px;
-  margin-bottom: 34px;
-  text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  color: var(--gold-hot);
+  font-size: 25px;
+  font-weight: 1000;
+  letter-spacing: 7px;
+  margin-bottom: 36px;
+  text-shadow: 0 0 35px rgba(255, 216, 107, 0.45);
+  position: relative;
+}
+
+.logo::after {
+  content: "BLACK WEALTH SYSTEM TERMINAL";
+  display: block;
+  margin-top: 8px;
+  color: var(--cyan);
+  font-size: 9px;
+  letter-spacing: 2px;
+  opacity: 0.85;
 }
 
 .nav-menu {
@@ -77,37 +117,79 @@ body::after {
 }
 
 .nav-menu a {
-  padding: 15px 17px;
-  color: #cbd5e1;
+  color: #dbeafe;
   text-decoration: none;
+  padding: 15px 16px;
+  border-radius: 18px;
   border: 1px solid transparent;
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.025), transparent);
+  font-weight: 900;
   cursor: pointer;
+  transition: 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-menu a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,216,107,0.16), rgba(103,232,249,0.07));
+  transform: translateX(-105%);
   transition: 0.25s ease;
-  font-weight: 800;
+}
+
+.nav-menu a:hover::before {
+  transform: translateX(0);
 }
 
 .nav-menu a:hover {
-  color: var(--gold2);
-  background: linear-gradient(135deg, rgba(212,175,55,0.14), rgba(255,255,255,0.03));
-  border-color: var(--line);
+  color: var(--gold-hot);
+  border-color: rgba(255,216,107,0.35);
   transform: translateX(8px);
 }
 
+.nav-menu a {
+  isolation: isolate;
+}
+
 .sidebar-card,
-.hero,
 .top-command,
+.hero,
 .metric-card,
 .risk-panel,
 .chart-panel,
 .intel-panel,
 .journal-panel {
-  background: linear-gradient(145deg, rgba(15,23,42,0.92), rgba(3,7,18,0.92));
+  background:
+    linear-gradient(145deg, rgba(15,23,42,0.94), rgba(2,6,23,0.88)),
+    radial-gradient(circle at top right, rgba(255,216,107,0.08), transparent 38%);
   border: 1px solid var(--line);
   box-shadow:
-    0 24px 70px rgba(0,0,0,0.48),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-  border-radius: 28px;
+    0 30px 90px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: var(--glass);
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-card::before,
+.top-command::before,
+.hero::before,
+.metric-card::before,
+.risk-panel::before,
+.chart-panel::before,
+.intel-panel::before,
+.journal-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255,216,107,0.12), transparent 22%, transparent 72%, rgba(103,232,249,0.08));
+  opacity: 0.9;
 }
 
 .sidebar-card {
@@ -123,25 +205,24 @@ body::after {
   line-height: 1.55;
 }
 
-.sidebar-card strong,
-.ticker-item b,
-.session-pill,
-.market-active {
+.sidebar-card strong {
   color: var(--green);
+  letter-spacing: 1px;
 }
 
 .main {
   width: 100%;
-  padding: 28px;
+  padding: 30px;
   overflow: hidden;
 }
 
 .ticker-bar {
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 20px;
+  border: 1px solid rgba(103,232,249,0.18);
+  border-radius: 22px;
   margin-bottom: 24px;
-  background: rgba(2,3,10,0.74);
+  background: rgba(2,3,10,0.82);
+  box-shadow: inset 0 0 30px rgba(103,232,249,0.03);
 }
 
 .ticker-track {
@@ -149,7 +230,7 @@ body::after {
   gap: 14px;
   width: max-content;
   padding: 14px;
-  animation: tickerMove 34s linear infinite;
+  animation: tickerMove 32s linear infinite;
 }
 
 @keyframes tickerMove {
@@ -158,25 +239,27 @@ body::after {
 }
 
 .ticker-item {
-  min-width: 245px;
-  padding: 14px 18px;
-  border-radius: 16px;
-  background: rgba(15,23,42,0.95);
-  border: 1px solid rgba(125,211,252,0.18);
+  min-width: 255px;
+  padding: 15px 18px;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(15,23,42,0.96), rgba(5,7,17,0.96));
+  border: 1px solid rgba(255,216,107,0.18);
   display: grid;
   gap: 5px;
 }
 
 .ticker-item strong {
-  color: var(--gold2);
-  font-size: 18px;
+  color: var(--gold-hot);
+  font-size: 19px;
 }
 
 .ticker-item span {
-  color: var(--blue);
-  font-size: 12px;
+  color: var(--cyan);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  font-weight: 900;
 }
 
 .ticker-item em {
@@ -184,68 +267,81 @@ body::after {
   font-style: normal;
 }
 
+.ticker-item b {
+  color: var(--green);
+  font-size: 12px;
+}
+
 .top-command {
-  padding: 24px;
+  padding: 25px;
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
   align-items: center;
   margin-bottom: 24px;
 }
 
 .top-command h2 {
   margin: 6px 0;
-  font-size: clamp(34px, 5vw, 60px);
-  color: var(--gold2);
+  color: var(--gold-hot);
+  font-size: clamp(36px, 5vw, 64px);
+  text-shadow: 0 0 35px rgba(255,216,107,0.22);
 }
 
 .session-pill,
 .panel-head span {
-  padding: 12px 16px;
+  padding: 13px 18px;
   border-radius: 999px;
   border: 1px solid rgba(0,255,136,0.34);
   background: rgba(0,255,136,0.08);
-  font-weight: 950;
+  color: var(--green);
+  font-weight: 1000;
   white-space: nowrap;
+  box-shadow: 0 0 28px rgba(0,255,136,0.08);
 }
 
 .hero {
-  padding: 44px;
+  padding: 50px;
   margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
 }
 
-.hero::before {
-  content: "BWST";
+.hero::after {
+  content: "𓂀 BWST";
   position: absolute;
-  right: 28px;
-  bottom: -36px;
-  font-size: 150px;
-  font-weight: 950;
-  color: rgba(212,175,55,0.045);
+  right: 32px;
+  bottom: -28px;
+  font-size: clamp(80px, 14vw, 190px);
+  font-weight: 1000;
+  color: rgba(255,216,107,0.055);
+  letter-spacing: -8px;
 }
 
 .eyebrow {
-  color: var(--gold2);
+  color: var(--gold-hot);
   font-size: 12px;
   letter-spacing: 5px;
-  font-weight: 950;
+  font-weight: 1000;
+  text-transform: uppercase;
 }
 
 .hero h1 {
   margin: 10px 0 18px;
-  color: var(--gold2);
-  font-size: clamp(48px, 8vw, 100px);
-  line-height: 0.92;
-  letter-spacing: -3px;
-  max-width: 980px;
-  text-shadow: 0 0 45px rgba(212,175,55,0.24);
+  color: var(--gold-hot);
+  font-size: clamp(52px, 8vw, 108px);
+  line-height: 0.9;
+  letter-spacing: -4px;
+  max-width: 1050px;
+  text-shadow:
+    0 0 45px rgba(255,216,107,0.25),
+    0 0 90px rgba(124,58,237,0.12);
 }
 
 .hero-text {
-  font-size: 20px;
-  max-width: 850px;
+  font-size: 21px;
+  max-width: 900px;
 }
 
 .metrics-grid {
@@ -260,16 +356,16 @@ body::after {
 }
 
 .metric-card small {
-  color: var(--blue);
+  color: var(--cyan);
   letter-spacing: 3px;
-  font-weight: 950;
+  font-weight: 1000;
 }
 
 .metric-card strong {
   display: block;
   margin-top: 10px;
-  color: var(--gold2);
-  font-size: 38px;
+  color: var(--gold-hot);
+  font-size: 40px;
 }
 
 .tools-grid,
@@ -284,14 +380,14 @@ body::after {
 }
 
 .terminal-grid {
-  grid-template-columns: minmax(0, 2fr) 410px;
+  grid-template-columns: minmax(0, 2fr) 430px;
 }
 
 .risk-panel,
 .chart-panel,
 .intel-panel,
 .journal-panel {
-  padding: 26px;
+  padding: 28px;
 }
 
 .panel-head {
@@ -307,8 +403,8 @@ body::after {
 .journal-panel h2,
 .risk-panel h2 {
   margin: 0;
-  color: var(--gold2);
-  font-size: 28px;
+  color: var(--gold-hot);
+  font-size: 29px;
 }
 
 .form-grid {
@@ -321,16 +417,17 @@ body::after {
   display: grid;
   gap: 8px;
   color: #e5e7eb;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 input,
 textarea {
   width: 100%;
-  padding: 16px 18px;
-  border-radius: 16px;
-  border: 1px solid rgba(148,163,184,0.25);
-  background: rgba(2,6,23,0.86);
+  padding: 17px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(148,163,184,0.24);
+  background:
+    linear-gradient(135deg, rgba(2,6,23,0.92), rgba(15,23,42,0.72));
   color: white;
   font-size: 16px;
   outline: none;
@@ -338,36 +435,37 @@ textarea {
 
 input:focus,
 textarea:focus {
-  border-color: var(--gold2);
-  box-shadow: 0 0 0 4px rgba(212,175,55,0.12);
+  border-color: var(--gold-hot);
+  box-shadow: 0 0 0 4px rgba(255,216,107,0.12);
 }
 
 textarea {
-  min-height: 125px;
+  min-height: 130px;
   resize: vertical;
 }
 
 button {
   padding: 15px 22px;
   border-radius: 16px;
-  border: 1px solid rgba(148,163,184,0.26);
-  background: rgba(15,23,42,0.95);
+  border: 1px solid rgba(148,163,184,0.25);
+  background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(2,6,23,0.98));
   color: white;
-  font-weight: 950;
+  font-weight: 1000;
   cursor: pointer;
   transition: 0.25s ease;
 }
 
 button:hover {
   transform: translateY(-3px);
-  border-color: var(--gold2);
+  border-color: var(--gold-hot);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
 }
 
 button.gold {
-  background: linear-gradient(135deg, var(--gold2), var(--gold));
+  background: linear-gradient(135deg, var(--gold-hot), var(--gold));
   color: #050505;
   border: none;
-  box-shadow: 0 0 35px rgba(212,175,55,0.25);
+  box-shadow: 0 0 40px rgba(255,216,107,0.24);
 }
 
 .journal-actions {
@@ -388,28 +486,31 @@ button.gold {
 .intel-card,
 .journal-entry {
   padding: 18px;
-  border-radius: 20px;
-  background: rgba(2,6,23,0.8);
-  border: 1px solid rgba(125,211,252,0.14);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(2,6,23,0.88), rgba(15,23,42,0.75));
+  border: 1px solid rgba(103,232,249,0.14);
 }
 
 .risk-results small {
-  color: var(--blue);
+  color: var(--cyan);
   letter-spacing: 3px;
+  font-weight: 1000;
 }
 
 .risk-results strong {
   display: block;
-  color: var(--gold2);
-  font-size: 34px;
+  color: var(--gold-hot);
+  font-size: 35px;
   margin-top: 8px;
 }
 
 .chart-box {
-  height: 560px;
-  border-radius: 22px;
+  height: 590px;
+  border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(125,211,252,0.16);
+  border: 1px solid rgba(103,232,249,0.18);
+  background: #02030a;
 }
 
 .tradingview-widget-container {
@@ -423,13 +524,13 @@ button.gold {
 
 .intel-card strong,
 .journal-entry strong {
-  color: var(--gold2);
+  color: var(--gold-hot);
 }
 
 .intel-card p,
 .journal-entry p {
   color: #dbeafe;
-  line-height: 1.55;
+  line-height: 1.56;
 }
 
 .notes-label {
@@ -440,7 +541,7 @@ button.gold {
   margin-top: 18px;
   display: grid;
   gap: 14px;
-  max-height: 420px;
+  max-height: 440px;
   overflow: auto;
   padding-right: 6px;
 }
@@ -458,7 +559,7 @@ button.gold {
 }
 
 .journal-entry b {
-  color: var(--blue);
+  color: var(--cyan);
 }
 
 .sidebar-card:hover,
@@ -468,14 +569,15 @@ button.gold {
 .risk-panel:hover,
 .chart-panel:hover,
 .intel-panel:hover,
-.journal-panel:hover {
-  border-color: rgba(245,215,110,0.55);
+.journal-panel:hover,
+.ticker-item:hover {
+  border-color: rgba(255,216,107,0.62);
   box-shadow:
-    0 30px 90px rgba(0,0,0,0.55),
-    0 0 40px rgba(212,175,55,0.08);
+    0 35px 95px rgba(0,0,0,0.58),
+    0 0 55px rgba(255,216,107,0.09);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1250px) {
   .terminal-grid,
   .tools-grid,
   .metrics-grid {
@@ -483,11 +585,11 @@ button.gold {
   }
 
   .sidebar {
-    width: 230px;
+    width: 245px;
   }
 }
 
-@media (max-width: 850px) {
+@media (max-width: 860px) {
   .app {
     flex-direction: column;
   }
@@ -503,10 +605,21 @@ button.gold {
   }
 
   .hero {
-    padding: 28px;
+    padding: 30px;
+    min-height: auto;
   }
 
   .chart-box {
     height: 430px;
+  }
+
+  .panel-head,
+  .top-command {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero h1 {
+    letter-spacing: -2px;
   }
 }
