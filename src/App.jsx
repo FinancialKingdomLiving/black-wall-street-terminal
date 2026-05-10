@@ -1,373 +1,489 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./App.css";
 
-const pages = [
-  "Home",
-  "About",
-  "Mission",
-  "Education",
-  "Tools",
-  "Ecosystem",
-  "Contact",
-  "Terminal",
+const tracks = {
+  Foundation: {
+    subtitle: "Market Literacy",
+    pitch: "For beginners who need structure before strategy.",
+    modules: [
+      {
+        code: "FND-01",
+        title: "What Trading Really Is",
+        outcome: "Separate structured trading from gambling.",
+        thesis:
+          "Trading is not guessing. Trading is structured decision-making under risk.",
+        study:
+          "A disciplined trader studies price, waits for a setup, defines risk, executes with controlled size, and reviews the result. The goal is not to win every trade. The goal is to protect capital and improve decision quality.",
+        mistake:
+          "Most beginners ask how much they can make before asking how much they can lose. That is casino thinking.",
+        work: ["Pick one market.", "Define your risk.", "Observe without entering.", "Write what price is doing."],
+      },
+      {
+        code: "FND-02",
+        title: "Candlestick Reading",
+        outcome: "Read buyer and seller pressure.",
+        thesis:
+          "Candles are the written record of price behavior.",
+        study:
+          "Bodies show commitment. Wicks show rejection. Large bodies show participation. Small bodies show hesitation. Candles matter most when combined with location, trend, and structure.",
+        mistake:
+          "One candle by itself does not make a trade. Context is king.",
+        work: ["Mark bullish candles.", "Mark bearish candles.", "Study long wicks.", "Write the reaction."],
+      },
+      {
+        code: "FND-03",
+        title: "Support & Resistance",
+        outcome: "Identify important price zones.",
+        thesis:
+          "Support and resistance are areas where price has memory.",
+        study:
+          "Support is where buyers may defend price. Resistance is where sellers may defend price. These are zones, not magic lines. Price can pierce, retest, reject, or consolidate around them.",
+        mistake:
+          "Drawing one skinny line and worshiping it is how traders get played.",
+        work: ["Mark support zones.", "Mark resistance zones.", "Watch reaction.", "Do not force entry."],
+      },
+    ],
+  },
+  Structure: {
+    subtitle: "Market Structure",
+    pitch: "For students ready to read trend, liquidity, and sessions.",
+    modules: [
+      {
+        code: "STR-01",
+        title: "Market Structure",
+        outcome: "Understand highs, lows, trend, and breaks.",
+        thesis:
+          "Structure shows who controls price: buyers, sellers, or neither side.",
+        study:
+          "Uptrends form higher highs and higher lows. Downtrends form lower highs and lower lows. Ranges move sideways between boundaries. Breaks matter, but reaction after the break matters more.",
+        mistake:
+          "A breakout with no follow-through is often bait.",
+        work: ["Mark swing highs.", "Mark swing lows.", "Find structure break.", "Watch the retest."],
+      },
+      {
+        code: "STR-02",
+        title: "Liquidity",
+        outcome: "Understand where stops and orders rest.",
+        thesis:
+          "Liquidity is where orders are waiting.",
+        study:
+          "Stops often rest above old highs and below old lows. Price may run those zones, trigger orders, and reverse. That is why confirmation matters after a sweep.",
+        mistake:
+          "Buying only because price broke a high can put you directly in the trap.",
+        work: ["Find an old high.", "Find an old low.", "Mark stop zones.", "Watch sweep and reclaim."],
+      },
+      {
+        code: "STR-03",
+        title: "Session Timing",
+        outcome: "Study Asia, London, and New York behavior.",
+        thesis:
+          "Time of day affects volatility and quality of movement.",
+        study:
+          "Asia often builds range. London often expands. New York can continue, reverse, or deliver heavy volatility. A trader who ignores sessions trades blind.",
+        mistake:
+          "Trading dead hours like New York open makes frustration expensive.",
+        work: ["Mark sessions.", "Watch two sessions.", "Track clean movement.", "Write session notes."],
+      },
+    ],
+  },
+  Execution: {
+    subtitle: "Advanced Execution",
+    pitch: "For traders learning confirmation, review, and discipline.",
+    modules: [
+      {
+        code: "EXE-01",
+        title: "Liquidity Sweep Framework",
+        outcome: "Understand sweep, reclaim, confirmation, and execution.",
+        thesis:
+          "The sweep is not the trade. The reclaim is where the decision begins.",
+        study:
+          "A sweep happens when price runs a high or low, triggers orders, and fails to continue. The disciplined trader waits for reclaim, confirmation, and defined risk.",
+        mistake:
+          "Entering the sweep too early means you volunteered as liquidity.",
+        work: ["Mark liquidity.", "Wait for sweep.", "Wait for reclaim.", "Record confirmation."],
+      },
+      {
+        code: "EXE-02",
+        title: "Multi-Timeframe Alignment",
+        outcome: "Use higher timeframe bias and lower timeframe entry.",
+        thesis:
+          "Higher timeframe gives context. Lower timeframe refines execution.",
+        study:
+          "Use the 4H for direction, 15M for setup, and 5M for entry behavior. Lower timeframes should not overrule the larger story.",
+        mistake:
+          "The 1-minute chart can make a grown man panic over noise.",
+        work: ["Check 4H bias.", "Find 15M setup.", "Watch 5M entry.", "Only trade alignment."],
+      },
+      {
+        code: "EXE-03",
+        title: "Execution Grading",
+        outcome: "Grade process, not just profit.",
+        thesis:
+          "A winning trade can be bad. A losing trade can be well executed.",
+        study:
+          "Review preparation, entry, stop placement, position size, patience, exit, and emotional control. Profit is the result. Process is the system.",
+        mistake:
+          "Profit can lie. Process tells the truth.",
+        work: ["Review last trade.", "Grade entry.", "Grade risk.", "Write one fix."],
+      },
+    ],
+  },
+};
+
+const markets = [
+  ["Stocks", "Ownership Market", "Moderate", "Company ownership, sectors, earnings, dividends, indexes, and long-term accumulation."],
+  ["Options", "Derivative Contract", "High", "Calls, puts, premium, expiration, volatility, time decay, and Greeks."],
+  ["Futures", "Leveraged Contract", "High", "Tick value, contract size, margin, prop firm rules, and volatility."],
+  ["Forex", "Currency Market", "Moderate to High", "Pairs, pips, lots, spreads, sessions, macro news, and liquidity."],
+  ["Crypto", "Digital Asset Market", "High", "Bitcoin cycles, altcoins, wallets, exchanges, volatility, and security."],
+  ["Gold / XAUUSD", "Macro Volatility", "Very High", "Liquidity, dollar strength, news, fear, sessions, and patience."],
+];
+
+const principles = [
+  "Risk before reward",
+  "No stop loss, no trade",
+  "One market first",
+  "One setup first",
+  "Journal everything",
+  "Respect session timing",
+  "Trade structure, not excitement",
+  "Capital preservation first",
 ];
 
 function App() {
   const [page, setPage] = useState("Home");
+  const [track, setTrack] = useState("Foundation");
+  const [moduleIndex, setModuleIndex] = useState(0);
+  const [marketIndex, setMarketIndex] = useState(5);
+  const [checks, setChecks] = useState({});
+  const [grade, setGrade] = useState(5);
+
+  const activeTrack = tracks[track];
+  const activeModule = activeTrack.modules[moduleIndex];
+
+  const completion = useMemo(() => {
+    const done = activeModule.work.filter((_, i) => checks[`${track}-${moduleIndex}-${i}`]).length;
+    return Math.round((done / activeModule.work.length) * 100);
+  }, [checks, track, moduleIndex, activeModule]);
+
+  function go(next) {
+    setPage(next);
+    window.scrollTo(0, 0);
+  }
+
+  function openModule(name, index = 0) {
+    setTrack(name);
+    setModuleIndex(index);
+    setPage("Module");
+    window.scrollTo(0, 0);
+  }
 
   return (
-    <div className="website">
+    <div className="app">
       <header className="topbar">
-        <button className="brand" onClick={() => setPage("Home")}>
-          BWST
-        </button>
-
+        <button className="brand" onClick={() => go("Home")}>BWST</button>
         <nav>
-          {pages.map((item) => (
-            <button
-              key={item}
-              className={page === item ? "active" : ""}
-              onClick={() => setPage(item)}
-            >
+          {["Home", "Institute", "Markets", "Risk", "Psychology", "Terminal", "Waitlist"].map((item) => (
+            <button key={item} className={page === item ? "active" : ""} onClick={() => go(item)}>
               {item}
             </button>
           ))}
         </nav>
       </header>
 
-      {page === "Home" && <Home setPage={setPage} />}
-      {page === "About" && <About />}
-      {page === "Mission" && <Mission />}
-      {page === "Education" && <Education />}
-      {page === "Tools" && <Tools />}
-      {page === "Ecosystem" && <Ecosystem />}
-      {page === "Contact" && <Contact />}
-      {page === "Terminal" && <TerminalPreview />}
+      {page === "Home" && <Home openModule={openModule} go={go} />}
+      {page === "Institute" && <Institute track={track} setTrack={setTrack} openModule={openModule} />}
+      {page === "Module" && (
+        <Module
+          track={track}
+          setTrack={setTrack}
+          moduleIndex={moduleIndex}
+          setModuleIndex={setModuleIndex}
+          activeTrack={activeTrack}
+          activeModule={activeModule}
+          checks={checks}
+          setChecks={setChecks}
+          completion={completion}
+          grade={grade}
+          setGrade={setGrade}
+        />
+      )}
+      {page === "Markets" && <Markets marketIndex={marketIndex} setMarketIndex={setMarketIndex} />}
+      {page === "Risk" && <Risk />}
+      {page === "Psychology" && <Psychology />}
+      {page === "Terminal" && <Terminal />}
+      {page === "Waitlist" && <Waitlist />}
 
       <footer className="footer">
-        <div>
-          <strong>Black Wall Street Terminal</strong>
-          <p>Private wealth intelligence. Economic discipline. Ownership culture.</p>
-        </div>
-        <p>Educational platform. Not financial advice.</p>
+        <strong>Black Wall Street Terminal</strong>
+        <span>Private Wealth Intelligence • Trading Education • Economic Discipline</span>
       </footer>
     </div>
   );
 }
 
-function PageHero({ eyebrow, title, text }) {
-  return (
-    <section className="page-hero">
-      <p className="eyebrow">{eyebrow}</p>
-      <h1>{title}</h1>
-      <p>{text}</p>
-    </section>
-  );
-}
-
-function Home({ setPage }) {
+function Home({ openModule, go }) {
   return (
     <>
-      <section className="home-hero">
-        <div>
+      <section className="hero">
+        <div className="hero-copy">
           <p className="eyebrow">PRIVATE WEALTH INTELLIGENCE PLATFORM</p>
-          <h1>The Black Wall Street Terminal</h1>
+          <h1>Black Wall Street Terminal</h1>
           <p>
-            A premium platform being built for trading intelligence, investing,
-            wealth education, business ownership, financial discipline, and
-            economic sovereignty.
+            A premium trading and wealth education institute built for disciplined adults,
+            serious builders, market students, and ownership-minded people.
           </p>
-
           <div className="actions">
-            <button onClick={() => setPage("Terminal")}>View Terminal Preview</button>
-            <button className="outline" onClick={() => setPage("Mission")}>
-              Read The Mission
-            </button>
+            <button onClick={() => openModule("Foundation", 0)}>Enter The Institute</button>
+            <button className="outline" onClick={() => go("Terminal")}>Preview Terminal</button>
           </div>
         </div>
 
-        <div className="hero-panel">
-          <div className="terminal-top">
-            <span></span>
-            <span></span>
-            <span></span>
+        <div className="terminal-box hero-terminal">
+          <div className="terminal-top"><span></span><span></span><span></span></div>
+          <div className="chart-panel">
+            <div className="price-path"></div>
+            <div className="zone top">Resistance</div>
+            <div className="zone bottom">Support</div>
+            <div className="dashline one"></div>
+            <div className="dashline two"></div>
           </div>
-          <p className="gold-line">BLACK WALL STREET TERMINAL</p>
-          <p>MARKET INTELLIGENCE: STRUCTURE FIRST</p>
-          <p>WEALTH MODE: DISCIPLINE</p>
-          <p>ECONOMIC FOCUS: OWNERSHIP</p>
-
-          <div className="mini-grid">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
+          <div className="terminal-line gold">BWST OPERATING MODEL</div>
+          <div className="terminal-line">FOUNDATION → STRUCTURE → EXECUTION</div>
+          <div className="terminal-line">CAPITAL PRESERVATION BEFORE SCALE</div>
         </div>
       </section>
 
-      <section className="intro-strip">
-        <h2>This is not another signal room.</h2>
+      <section className="proof-strip">
+        <div><strong>03</strong><span>Training Tracks</span></div>
+        <div><strong>09</strong><span>Core Modules</span></div>
+        <div><strong>06</strong><span>Market Classes</span></div>
+        <div><strong>100%</strong><span>Discipline First</span></div>
+      </section>
+
+      <section className="statement">
+        <p className="eyebrow">THE STANDARD</p>
+        <h2>Not a signal room. Not a guru funnel. A serious wealth command school.</h2>
         <p>
-          The goal is to build a serious wealth command center — part trading
-          desk, part education hub, part economic operating system.
+          This platform teaches people how markets behave, how risk destroys accounts,
+          how capital is protected, and how ownership thinking is built.
         </p>
       </section>
 
-      <section className="feature-grid">
-        <Feature
-          number="01"
-          title="Trading Intelligence"
-          text="Market structure, risk management, trade journaling, watchlists, and analysis tools."
-        />
-        <Feature
-          number="02"
-          title="Wealth Education"
-          text="Clear lessons on investing, credit, insurance, business, ownership, and money discipline."
-        />
-        <Feature
-          number="03"
-          title="Business Ownership"
-          text="Future intelligence tools for builders, entrepreneurs, creators, and independent operators."
-        />
-        <Feature
-          number="04"
-          title="Economic Sovereignty"
-          text="A platform focused on legacy, ownership, strategy, community economics, and execution."
-        />
-      </section>
-    </>
-  );
-}
-
-function Feature({ number, title, text }) {
-  return (
-    <article className="feature-card">
-      <span>{number}</span>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </article>
-  );
-}
-
-function About() {
-  return (
-    <>
-      <PageHero
-        eyebrow="ABOUT THE PLATFORM"
-        title="A wealth intelligence system for serious builders."
-        text="Black Wall Street Terminal is being built to combine market education, trading discipline, economic history, business ownership, and financial tools into one premium digital platform."
-      />
-
-      <section className="content-grid">
-        <div className="content-card">
-          <h2>What it is</h2>
-          <p>
-            A structured platform for people who want to understand markets,
-            money, business, investing, and ownership without being fed hype,
-            scams, or shallow guru talk.
-          </p>
-        </div>
-
-        <div className="content-card">
-          <h2>What it is not</h2>
-          <p>
-            It is not a flashy crypto casino, a cluttered dashboard dump, or a
-            fake luxury sales funnel. The design direction is private,
-            serious, spacious, and institutional.
-          </p>
-        </div>
-      </section>
-    </>
-  );
-}
-
-function Mission() {
-  return (
-    <>
-      <PageHero
-        eyebrow="MISSION"
-        title="Market intelligence. Wealth discipline. Economic sovereignty."
-        text="The mission is to help people think clearly about money, markets, ownership, risk, and long-term economic power."
-      />
-
-      <section className="statement-block">
-        <h2>The deeper purpose</h2>
-        <p>
-          Black Wall Street Terminal is about more than charts. It is about
-          restoring financial seriousness, studying systems, building
-          ownership, and creating a culture where information becomes action.
-        </p>
-      </section>
-
-      <section className="feature-grid">
-        <Feature
-          number="A"
-          title="Discipline"
-          text="No emotional clicking. No gambling dressed up as trading. Risk first."
-        />
-        <Feature
-          number="B"
-          title="Ownership"
-          text="Build assets, businesses, knowledge, and systems that do not disappear overnight."
-        />
-        <Feature
-          number="C"
-          title="Education"
-          text="Teach people how money, markets, business, and financial protection actually work."
-        />
-        <Feature
-          number="D"
-          title="Legacy"
-          text="Use economic knowledge to build stronger families, communities, and futures."
-        />
-      </section>
-    </>
-  );
-}
-
-function Education() {
-  const topics = [
-    "Trading Basics",
-    "Risk Management",
-    "Options Education",
-    "Forex & Futures",
-    "Crypto Literacy",
-    "Investing Foundations",
-    "Business Ownership",
-    "Insurance & Protection",
-    "Credit & Capital",
-    "Black Economic History",
-  ];
-
-  return (
-    <>
-      <PageHero
-        eyebrow="EDUCATION"
-        title="A school for wealth, markets, and ownership."
-        text="The education section will hold lessons, guides, study paths, and practical explanations for people learning how to move with discipline."
-      />
-
-      <section className="topic-list">
-        {topics.map((topic) => (
-          <div key={topic}>{topic}</div>
+      <section className="track-grid">
+        {Object.keys(tracks).map((name) => (
+          <article className="track-card" key={name} onClick={() => openModule(name, 0)}>
+            <span>{tracks[name].subtitle}</span>
+            <h2>{name}</h2>
+            <p>{tracks[name].pitch}</p>
+            <button>Open Track</button>
+          </article>
         ))}
       </section>
     </>
   );
 }
 
-function Tools() {
+function Institute({ track, setTrack, openModule }) {
   return (
     <>
-      <PageHero
-        eyebrow="TOOLS PREVIEW"
-        title="Tools belong in the terminal, not dumped on the homepage."
-        text="The public website explains the platform. The private terminal will hold the actual calculators, journals, dashboards, AI tools, and market systems."
-      />
+      <PageTitle eyebrow="INSTITUTE MAP" title="Choose a track. Study the modules. Apply the work." text="This is built like a real training room, not a random landing page." />
 
-      <section className="content-grid three">
-        <div className="content-card">
-          <h2>Risk Calculator</h2>
-          <p>Position sizing, max risk, stop loss planning, and discipline tracking.</p>
-        </div>
+      <section className="track-tabs">
+        {Object.keys(tracks).map((name) => (
+          <button key={name} className={track === name ? "active" : ""} onClick={() => setTrack(name)}>
+            {name}
+          </button>
+        ))}
+      </section>
 
-        <div className="content-card">
-          <h2>Cloud Journal</h2>
-          <p>Save trades, review emotions, study mistakes, and track execution.</p>
+      <section className="track-brief">
+        <div>
+          <p className="eyebrow">{tracks[track].subtitle}</p>
+          <h2>{track} Track</h2>
+          <p>{tracks[track].summary}</p>
         </div>
+        <div className="seal">
+          <strong>{tracks[track].modules.length}</strong>
+          <span>Modules</span>
+        </div>
+      </section>
 
-        <div className="content-card">
-          <h2>Portfolio Tracker</h2>
-          <p>Track assets, crypto, investing positions, and long-term wealth data.</p>
-        </div>
+      <section className="module-grid">
+        {tracks[track].modules.map((m, i) => (
+          <article className="module-card" key={m.code}>
+            <span>{m.code}</span>
+            <h2>{m.title}</h2>
+            <p>{m.outcome}</p>
+            <button onClick={() => openModule(track, i)}>Open Module</button>
+          </article>
+        ))}
       </section>
     </>
   );
 }
 
-function Ecosystem() {
+function Module({ track, setTrack, moduleIndex, setModuleIndex, activeTrack, activeModule, checks, setChecks, completion, grade, setGrade }) {
   return (
     <>
-      <PageHero
-        eyebrow="ECOSYSTEM"
-        title="One design language. Multiple serious platforms."
-        text="Black Wall Street Terminal is part of a larger ecosystem of education, herbs, Torah study, leadership, and wealth intelligence."
-      />
+      <PageTitle eyebrow={`${track} • ${activeModule.code}`} title={activeModule.title} text={activeModule.outcome} />
 
-      <section className="ecosystem-list">
-        <Eco title="Black Wall Street Terminal" text="Wealth, markets, trading, ownership, and economic intelligence." />
-        <Eco title="Hood Alchemist Savior" text="Herbal knowledge, gardening, natural healing, and plant education." />
-        <Eco title="Torah Tongue Study Hall" text="Biblical Hebrew, Torah education, language study, and spiritual discipline." />
-        <Eco title="LeadNowOK" text="Leadership, execution, productivity, and personal development." />
+      <section className="track-tabs tight">
+        {Object.keys(tracks).map((name) => (
+          <button key={name} className={track === name ? "active" : ""} onClick={() => { setTrack(name); setModuleIndex(0); }}>
+            {name}
+          </button>
+        ))}
+      </section>
+
+      <section className="track-tabs tight">
+        {activeTrack.modules.map((m, i) => (
+          <button key={m.code} className={moduleIndex === i ? "active" : ""} onClick={() => setModuleIndex(i)}>
+            {m.code}
+          </button>
+        ))}
+      </section>
+
+      <section className="workspace">
+        <article className="lesson-panel">
+          <div className="lesson-visual">
+            <div className="price-path small"></div>
+            <div className="tag context">Context</div>
+            <div className="tag risk">Risk</div>
+            <div className="tag execute">Execution</div>
+          </div>
+
+          <p className="eyebrow">CORE THESIS</p>
+          <h2>{activeModule.thesis}</h2>
+          <p>{activeModule.study}</p>
+
+          <div className="mistake-box">
+            <p className="eyebrow">COMMON MISTAKE</p>
+            <p>{activeModule.mistake}</p>
+          </div>
+        </article>
+
+        <aside className="assignment-panel">
+          <p className="eyebrow">FIELD ASSIGNMENT</p>
+          <h2>{completion}% Complete</h2>
+
+          <div className="progress"><div style={{ width: `${completion}%` }} /></div>
+
+          <div className="checklist">
+            {activeModule.work.map((item, i) => (
+              <label key={item}>
+                <input
+                  type="checkbox"
+                  checked={!!checks[`${track}-${moduleIndex}-${i}`]}
+                  onChange={(e) =>
+                    setChecks({ ...checks, [`${track}-${moduleIndex}-${i}`]: e.target.checked })
+                  }
+                />
+                {item}
+              </label>
+            ))}
+          </div>
+
+          <div className="grade-box">
+            <p>Understanding Level</p>
+            <input type="range" min="0" max="10" value={grade} onChange={(e) => setGrade(e.target.value)} />
+            <strong>{grade}/10</strong>
+          </div>
+        </aside>
       </section>
     </>
   );
 }
 
-function Eco({ title, text }) {
-  return (
-    <div className="eco-card">
-      <h2>{title}</h2>
-      <p>{text}</p>
-    </div>
-  );
-}
+function Markets({ marketIndex, setMarketIndex }) {
+  const market = markets[marketIndex];
 
-function Contact() {
   return (
     <>
-      <PageHero
-        eyebrow="CONTACT / WAITLIST"
-        title="Request early access."
-        text="The platform is being stabilized into a premium preview first. The private terminal will open after the structure is clean and deployment usage is controlled."
-      />
+      <PageTitle eyebrow="MARKET LIBRARY" title="Different markets require different discipline." text="A serious trader does not treat stocks, options, futures, forex, crypto, and gold the same." />
 
-      <section className="contact-card">
-        <h2>Join the waitlist</h2>
-        <p>
-          Email: financialkingdomliving@gmail.com
-        </p>
-        <button>Request Access</button>
+      <section className="market-grid">
+        {markets.map((m, i) => (
+          <button key={m[0]} className={marketIndex === i ? "market-card active" : "market-card"} onClick={() => setMarketIndex(i)}>
+            <span>{m[1]}</span>
+            <strong>{m[0]}</strong>
+            <small>{m[2]}</small>
+          </button>
+        ))}
+      </section>
+
+      <section className="market-detail">
+        <div className="market-stat"><span>Risk Level</span><strong>{market[2]}</strong></div>
+        <div><p className="eyebrow">{market[1]}</p><h2>{market[0]}</h2><p>{market[3]}</p></div>
       </section>
     </>
   );
 }
 
-function TerminalPreview() {
+function Risk() {
   return (
     <>
-      <PageHero
-        eyebrow="PRIVATE TERMINAL PREVIEW"
-        title="The dashboard is being moved behind the right door."
-        text="The live tools will live inside a private terminal experience instead of overwhelming the public homepage."
-      />
+      <PageTitle eyebrow="RISK ROOM" title="Capital preservation comes before growth." text="Risk management is not optional. It is the wall between discipline and foolishness." />
+      <section className="risk-grid">
+        {principles.map((rule, i) => (
+          <div key={rule}><span>{String(i + 1).padStart(2, "0")}</span><p>{rule}</p></div>
+        ))}
+      </section>
+    </>
+  );
+}
 
+function Psychology() {
+  const cards = [
+    ["Patience", "Wait for your setup. Do not force the market to entertain you."],
+    ["Emotional Control", "If one red trade changes your mood, your size is too big or your plan is too weak."],
+    ["Process", "A green trade can be poorly executed. A red trade can be correctly executed."],
+    ["Review", "A journal turns repeated mistakes into intelligence."],
+  ];
+
+  return (
+    <>
+      <PageTitle eyebrow="TRADING PSYCHOLOGY" title="The market reveals the trader." text="Strategy without emotional discipline is incomplete." />
+      <section className="psych-grid">
+        {cards.map(([title, text]) => <article className="psych-card" key={title}><h2>{title}</h2><p>{text}</p></article>)}
+      </section>
+    </>
+  );
+}
+
+function Terminal() {
+  return (
+    <>
+      <PageTitle eyebrow="PRIVATE TERMINAL" title="The live tools belong behind the terminal door." text="Dashboards, AI assistants, journals, watchlists, and analytics will live here after the public institute is polished." />
       <section className="terminal-preview">
-        <div className="terminal-window">
-          <div className="terminal-top">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-
-          <div className="terminal-row gold">BWST PRIVATE TERMINAL</div>
-          <div className="terminal-row">TRADING DESK — COMING ONLINE</div>
-          <div className="terminal-row">RISK ROOM — STRUCTURE FIRST</div>
-          <div className="terminal-row">WEALTH DASHBOARD — PRIVATE ACCESS</div>
-          <div className="terminal-row">AI FINANCE ASSISTANT — FUTURE BUILD</div>
-
-          <div className="dashboard-preview-grid">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div className="wide"></div>
-          </div>
+        <div className="terminal-box big">
+          <div className="terminal-top"><span></span><span></span><span></span></div>
+          <div className="terminal-line gold">BWST PRIVATE TERMINAL</div>
+          <div className="terminal-line">MARKET DESK</div>
+          <div className="terminal-line">RISK ROOM</div>
+          <div className="terminal-line">EXECUTION REVIEW</div>
+          <div className="terminal-grid"><div></div><div></div><div></div><div></div><div className="wide"></div></div>
         </div>
       </section>
     </>
   );
+}
+
+function Waitlist() {
+  return (
+    <>
+      <PageTitle eyebrow="EARLY ACCESS" title="Request private access." text="This is the door for early members, serious learners, builders, and future platform users." />
+      <section className="waitlist-card">
+        <h2>Join the BWST private list</h2>
+        <p>For trading education, private terminal updates, wealth tools, and economic intelligence.</p>
+        <div className="waitlist-form"><input placeholder="Email address" /><button>Request Access</button></div>
+      </section>
+    </>
+  );
+}
+
+function PageTitle({ eyebrow, title, text }) {
+  return <section className="page-title"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{text}</p></section>;
 }
 
 export default App;
